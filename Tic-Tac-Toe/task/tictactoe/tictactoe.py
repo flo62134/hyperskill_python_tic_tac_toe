@@ -16,6 +16,7 @@ IMPOSSIBLE = 'Impossible'
 EMPTY = '_'
 TOP_BORDER = '-'
 SIDE_BORDER = '|'
+ENDING_STATES = [X_WINS, O_WINS, DRAW, IMPOSSIBLE]
 
 
 def print_border():
@@ -104,7 +105,6 @@ def get_impossible_state(grid_chars: str):
             columns_state.append(column_state)
 
     won_lines = len(rows_state) + len(columns_state) > 1
-    print(won_lines)
     if won_lines:
         return IMPOSSIBLE
 
@@ -176,10 +176,16 @@ def apply_move(grid_chars: str, char: str, x: int, y: int):
     return "".join(grid_list)
 
 
-grid = input(ASK_FOR_GRID)
+grid = '_________'
+state = ''
+current_player = X_CHAR
+
+while state not in ENDING_STATES:
+    print_grid(grid)
+    user_x, user_y = get_user_coordinates(grid)
+    grid = apply_move(grid, current_player, user_x, user_y)
+    state = get_state(grid)
+    current_player = X_CHAR if current_player == O_CHAR else O_CHAR
+
 print_grid(grid)
-user_x, user_y = get_user_coordinates(grid)
-grid = apply_move(grid, X_CHAR, user_x, user_y)
-print_grid(grid)
-# state = get_state(grid)
-# print(state)
+print(state)
