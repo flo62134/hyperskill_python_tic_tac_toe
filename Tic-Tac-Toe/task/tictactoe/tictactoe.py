@@ -1,4 +1,9 @@
 # write your code here
+CELL_OCCUPIED = 'This cell is occupied! Choose another one!'
+ASK_FOR_GRID = 'Enter cells:'
+INVALID_COORDINATES_FORMAT = 'You should enter numbers!'
+ASK_FOR_COORDINATES = 'Enter the coordinates:'
+COORDINATES_LIMIT_EXCEEDED = 'Coordinates should be from 1 to 3!'
 NOT_FINISHED = 'Game not finished'
 DRAW = 'Draw'
 X_CHAR = 'X'
@@ -13,7 +18,7 @@ TOP_BORDER = '-'
 SIDE_BORDER = '|'
 
 
-def get_border():
+def print_border():
     top_border = ''
     for top_border_char in range(1, 10):
         top_border += TOP_BORDER
@@ -21,7 +26,7 @@ def get_border():
     print(top_border)
 
 
-def get_lines(grid_string: str):
+def print_lines(grid_string: str):
     chars = list(grid_string)
     for x in range(0, 3):
         get_line(chars, x)
@@ -130,9 +135,51 @@ def get_state(grid_chars: str):
     return DRAW
 
 
-grid = input()
-get_border()
-get_lines(grid)
-get_border()
-state = get_state(grid)
-print(state)
+def print_grid(grid_chars: str):
+    print_border()
+    print_lines(grid_chars)
+    print_border()
+
+
+def get_user_coordinates(grid_chars: str):
+    x, y = None, None
+    occupied = True
+    invalid_coordinates = True
+
+    while invalid_coordinates or occupied:
+        coordinates = input(ASK_FOR_COORDINATES).split()
+        x = int(coordinates[0])
+        y = int(coordinates[1])
+        invalid_coordinates = not isinstance(x, int) or not isinstance(y, int)
+
+        if not(1 <= x <= 3) or not(1 <= y <= 3):
+            print(COORDINATES_LIMIT_EXCEEDED)
+        elif invalid_coordinates:
+            print(INVALID_COORDINATES_FORMAT)
+        else:
+            occupied = grid_chars[coordinates_to_grid(x, y)] != EMPTY
+            if occupied:
+                print(CELL_OCCUPIED)
+
+    return x, y
+
+
+def coordinates_to_grid(x: int, y: int):
+    grid_position = x - 1
+    grid_position += (3 - y) * 3
+    return grid_position
+
+
+def apply_move(grid_chars: str, char: str, x: int, y: int):
+    grid_list = list(grid_chars)
+    grid_list[coordinates_to_grid(x, y)] = char
+    return "".join(grid_list)
+
+
+grid = input(ASK_FOR_GRID)
+print_grid(grid)
+user_x, user_y = get_user_coordinates(grid)
+grid = apply_move(grid, X_CHAR, user_x, user_y)
+print_grid(grid)
+# state = get_state(grid)
+# print(state)
